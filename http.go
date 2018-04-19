@@ -72,7 +72,7 @@ func Post(url string, v interface{}, wxr wxResp) (err error) {
 	return parseWXResp(resp, wxr)
 }
 
-func PostJs(url string, js []byte, wxr wxResp) (err error) {
+func PostRaw(url string, js []byte, wxr wxResp) (err error) {
 	resp, err := client.Post(url, contentType, bytes.NewBuffer(js))
 	if err != nil {
 		return err

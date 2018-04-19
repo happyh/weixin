@@ -174,11 +174,11 @@ func SendCustomMsg(openId string, msg CustMsg) (err error) {
 		openId, msgType, msgType, js)
 
 	url := fmt.Sprintf(CustomMsgURL, AccessToken())
-	return PostJs(url, []byte(jsonStr), nil)
+	return PostRaw(url, []byte(jsonStr), nil)
 }
 
 func SendTempleMsg(openId string, CustMsg string) (err error) {
 	url := fmt.Sprintf(TempleteURL, AccessToken())
-	return PostJs(url, []byte(CustMsg), nil)
+	return PostRaw(url, []byte(CustMsg), nil)
 
 }
