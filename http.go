@@ -72,6 +72,14 @@ func Post(url string, v interface{}, wxr wxResp) (err error) {
 	return parseWXResp(resp, wxr)
 }
 
+func PostJs(url string, js []byte, wxr wxResp) (err error) {
+	resp, err := client.Post(url, contentType, bytes.NewBuffer(js))
+	if err != nil {
+		return err
+	}
+	return parseWXResp(resp, wxr)
+}
+
 // Upload 工具类, 上传文件
 func Upload(url, fieldName string, file *os.File, wxr wxResp, desc ...string) (err error) {
 	buf := &bytes.Buffer{}

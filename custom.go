@@ -15,6 +15,8 @@ const (
 	CustomHeadingURL = "http://api.weixin.qq.com/customservice/kfaccount/uploadheadimg?access_token=%s&kf_account=%s"
 	CustomListURL    = "https://api.weixin.qq.com/cgi-bin/customservice/getkflist?access_token=%s"
 	CustomMsgURL     = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=%s"
+
+	TempleteURL = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=%s"
 )
 
 // Custom 客服帐号
@@ -172,5 +174,11 @@ func SendCustomMsg(openId string, msg CustMsg) (err error) {
 		openId, msgType, msgType, js)
 
 	url := fmt.Sprintf(CustomMsgURL, AccessToken())
-	return Post(url, []byte(jsonStr), nil)
+	return PostJs(url, []byte(jsonStr), nil)
+}
+
+func SendTempleMsg(openId string, CustMsg string) (err error) {
+	url := fmt.Sprintf(TempleteURL, AccessToken())
+	return PostJs(url, []byte(CustMsg), nil)
+
 }

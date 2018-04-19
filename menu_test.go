@@ -58,11 +58,14 @@ func TestCreateMenu(t *testing.T) {
 
 	err := CreateMenu(buttons)
 	if err != nil {
-		t.Error(err)
+		t.Error("CreateMenu:", err)
 		t.FailNow()
+	} else {
+		t.Logf("CreateMenu OK")
 	}
 }
 
+/*
 func TestGetMenu(t *testing.T) {
 	buttons, err := GetMenu()
 	if err != nil {
@@ -90,3 +93,4 @@ func TestGetMenuInfo(t *testing.T) {
 
 	t.Logf("%v", mi)
 }
+*/
