@@ -12,7 +12,7 @@ import (
 )
 
 // tick := time.Tick(7 * time.Second)
-const refreshTimeout = 30 * time.Minute
+const refreshTimeout = 5 * time.Minute
 const tokenURL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s"
 
 type accessToken struct {
@@ -31,6 +31,11 @@ func RefreshAccessToken(appId, appSecret string) {
 
 	AccessToken = func() string {
 		_token.mutex.RLock()
+		if _token.AccessToken == "" {
+			_token.mutex.RUnlock()
+			time.Sleep(3 * time.Second)
+			_token.mutex.RLock()
+		}
 		defer _token.mutex.RUnlock()
 
 		return _token.AccessToken
@@ -43,8 +48,8 @@ func RefreshAccessToken(appId, appSecret string) {
 		for {
 			new := refresh(url)
 
-			log.Debugf("old access token %+v", _token)
-			log.Debugf("new access token %+v", new)
+			//log.Debugf("old access token %+v", _token)
+			//log.Debugf("new access token %+v", new)
 
 			_token.mutex.Lock()
 			_token.AccessToken = new.AccessToken

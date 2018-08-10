@@ -21,12 +21,10 @@ func main() {
 		fmt.Printf("%#v %#v %#v %#v", openIds, total, count, nextOpenId)
 	}
 
-	//	msg := `{"touser":"oFIl_0QmonGnhRTP_sOwDF1jm4xM","template_id":"7ofyI1mXCvBdzgIy91H1uFbK31MNA6dAAvTs62dzBT4","url":"","topcolor":"#FF0000","data":{"User": {"value":"黄先生","color":"#173177"}}}`
-
 	msg := `
 {
     "touser": "oFIl_0QmonGnhRTP_sOwDF1jm4xM",
-    "template_id": "7ofyI1mXCvBdzgIy91H1uFbK31MNA6dAAvTs62dzBT4",
+    "template_id": "tSjnK9dDVAJpHY5G-tqYhpIjkTCrJvvRyCNvDOc2vmM",
     "url": "",
     "topcolor": "#FF0000",
     "data": {
@@ -69,5 +67,69 @@ func main() {
 	err = weixin.SendCustomMsg(nextOpenId, ct)
 	if err != nil {
 		fmt.Println(err)
+	}
+
+	TestCreateMenu()
+}
+
+func TestCreateMenu() {
+	buttons := []weixin.Button{
+		weixin.Button{
+			Name: "扫码",
+			SubButton: []weixin.Button{
+				weixin.Button{
+					Name: "扫码带提示",
+					Type: weixin.MenuTypeScancodeWaitmsg,
+					Key:  "rselfmenu_0_0",
+				},
+				weixin.Button{
+					Name: "扫码推事件",
+					Type: weixin.MenuTypeScancodePush,
+					Key:  "rselfmenu_0_1",
+				},
+			},
+		},
+		weixin.Button{
+			Name: "发图",
+			SubButton: []weixin.Button{
+				weixin.Button{
+					Name: "系统拍照发图",
+					Type: weixin.MenuTypePicSysphoto,
+					Key:  "rselfmenu_1_0",
+				},
+				weixin.Button{
+					Name: "拍照或者相册发图",
+					Type: weixin.MenuTypePicPhotoOrAlbum,
+					Key:  "rselfmenu_1_1",
+				},
+				weixin.Button{
+					Name: "微信相册发图",
+					Type: weixin.MenuTypePicWeixin,
+					Key:  "rselfmenu_1_2",
+				},
+			},
+		},
+		weixin.Button{
+			Name: "测试",
+			SubButton: []weixin.Button{
+				weixin.Button{
+					Name: "腾讯",
+					Type: weixin.MenuTypeView,
+					URL:  "http://qq.com",
+				},
+				weixin.Button{
+					Name: "发送位置",
+					Type: weixin.MenuTypeLocationSelect,
+					Key:  "rselfmenu_2_0",
+				},
+			},
+		},
+	}
+
+	err := weixin.CreateMenu(buttons)
+	if err != nil {
+		fmt.Println("CreateMenu failed,err:", err)
+	} else {
+		fmt.Println("CreateMenu OK")
 	}
 }
