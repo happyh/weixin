@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/arstd/log"
+	log "github.com/happyh/go-logging"
 )
 
 // tick := time.Tick(7 * time.Second)
-const refreshTimeout = 5 * time.Minute
+const refreshTimeout = 120 * time.Minute
 const tokenURL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s"
 
 type accessToken struct {
@@ -28,37 +28,43 @@ var AccessToken func() string
 func RefreshAccessToken(appId, appSecret string) {
 	// 内部变量，外部不可以调用
 	var _token = &accessToken{}
+	url := fmt.Sprintf(tokenURL, appId, appSecret)
+	/*
+		go func() {
+			tick := time.Tick(refreshTimeout)
+			for {
+				new := refresh(url)
 
+				log.Log().Noticef("old access token %+v", _token)
+				log.Log().Noticef("new access token %+v", new)
+
+				_token.mutex.Lock()
+				_token.AccessToken = new.AccessToken
+				_token.ExpiresIn = new.ExpiresIn
+				_token.mutex.Unlock()
+
+				<-tick // 等待下一个时钟周期到来
+			}
+		}()
+	*/
 	AccessToken = func() string {
-		_token.mutex.RLock()
-		if _token.AccessToken == "" {
-			_token.mutex.RUnlock()
-			time.Sleep(3 * time.Second)
-			_token.mutex.RLock()
-		}
-		defer _token.mutex.RUnlock()
+		//		_token.mutex.RLock()
+		//		defer _token.mutex.RUnlock()
 
+		// get new token every fun
+		new := refresh(url)
+
+		log.Log().Noticef("old access token %+v", _token)
+		log.Log().Noticef("new access token %+v", new)
+
+		_token.mutex.Lock()
+		_token.AccessToken = new.AccessToken
+		_token.ExpiresIn = new.ExpiresIn
+		_token.mutex.Unlock()
+
+		log.Log().Notice("AccessToken:", _token.AccessToken)
 		return _token.AccessToken
 	}
-
-	go func() {
-		url := fmt.Sprintf(tokenURL, appId, appSecret)
-
-		tick := time.Tick(refreshTimeout)
-		for {
-			new := refresh(url)
-
-			//log.Debugf("old access token %+v", _token)
-			//log.Debugf("new access token %+v", new)
-
-			_token.mutex.Lock()
-			_token.AccessToken = new.AccessToken
-			_token.ExpiresIn = new.ExpiresIn
-			_token.mutex.Unlock()
-
-			<-tick // 等待下一个时钟周期到来
-		}
-	}()
 }
 
 func refresh(url string, ns ...int) (new *accessToken) {
@@ -70,7 +76,7 @@ func refresh(url string, ns ...int) (new *accessToken) {
 	var err error
 	defer func() {
 		if err != nil {
-			log.Error(err)
+			log.Log().Error(err)
 			time.Sleep(3 * time.Minute)
 			if n < 9 {
 				n++
@@ -81,11 +87,13 @@ func refresh(url string, ns ...int) (new *accessToken) {
 
 	resp, err := http.Get(url)
 	if err != nil {
+		log.Log().Errorf("weixin accesstoken refresh failed,err:", err)
 		return
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		log.Log().Errorf("weixin accesstoken refresh failed,err:", err)
 		return
 	}
 	resp.Body.Close()
@@ -93,7 +101,12 @@ func refresh(url string, ns ...int) (new *accessToken) {
 	new = &accessToken{}
 	err = json.Unmarshal(body, new)
 	if err != nil {
+		log.Log().Errorf("weixin accesstoken refresh failed,err:", err)
 		return
+	}
+
+	if new.AccessToken == "" {
+		log.Log().Errorf("weixin accesstoken refresh failed,body:", body)
 	}
 
 	return new
