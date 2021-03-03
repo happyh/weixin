@@ -54,15 +54,15 @@ func RefreshAccessToken(appId, appSecret string) {
 		// get new token every fun
 		new := refresh(url)
 
-		log.Log().Noticef("old access token %+v", _token)
-		log.Log().Noticef("new access token %+v", new)
+		//log.Log().Noticef("old access token %+v", _token)
+		//log.Log().Noticef("new access token %+v", new)
 
 		_token.mutex.Lock()
 		_token.AccessToken = new.AccessToken
 		_token.ExpiresIn = new.ExpiresIn
 		_token.mutex.Unlock()
 
-		log.Log().Notice("AccessToken:", _token.AccessToken)
+		//log.Log().Notice("AccessToken:", _token.AccessToken)
 		return _token.AccessToken
 	}
 }

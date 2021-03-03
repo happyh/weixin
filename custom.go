@@ -180,5 +180,4 @@ func SendCustomMsg(openId string, msg CustMsg) (err error) {
 func SendTempleMsg(openId string, CustMsg string) (err error) {
 	url := fmt.Sprintf(TempleteURL, AccessToken())
 	return PostRaw(url, []byte(CustMsg), nil)
-
 }
